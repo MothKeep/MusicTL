@@ -1,28 +1,47 @@
 #include "MainWindow.h"
 #include "ui/Player.h"
 #include "ui/Settings.h"
+#include "ui/TierList.h"
+#include "ui/Content.h"
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QScrollArea>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent){
   QWidget* central = new QWidget(this);
   setCentralWidget(central);
 
   auto* root = new QHBoxLayout(central);
+  root->setContentsMargins(0,0,0,0);
+  root->setSpacing(0);
   
   QWidget* right = new QWidget;
   auto* rightLayout = new QVBoxLayout(right);
-  
+  rightLayout->setContentsMargins(0,0,0,0);
+  rightLayout->setSpacing(0);
+
   QWidget* top = new QWidget;
   auto* topLayout = new QHBoxLayout(top);
+  topLayout->setContentsMargins(0,0,0,0);
+  topLayout->setSpacing(4);
+  top->setStyleSheet("background-color: #0f0f0f;");
   player = new Player;
   settings = new Settings;
+  tierlist = new TierList;
+  content = new Content;
+  
+  auto *TierScroll = new QScrollArea;
+  TierScroll->setWidget(tierlist);
+  TierScroll->setWidgetResizable(true);
+  TierScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  TierScroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  TierScroll->setStyleSheet("");
 
-  root->addWidget(settings, 30);
+  root->addWidget(settings);
   root->addWidget(right);
   rightLayout->addWidget(top);
   rightLayout->addWidget(player);
-  //topLayout->addWidget(tierlist);
-  //topLayout->addWidget(content);
+  topLayout->addWidget(TierScroll, 65);
+  topLayout->addWidget(content, 35);
 }

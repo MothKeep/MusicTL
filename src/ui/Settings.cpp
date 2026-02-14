@@ -3,9 +3,14 @@
 #include <QMenuBar>
 
 Settings::Settings(QWidget *parent) : QMainWindow(parent) {
-  auto *quit = new QAction("&Quit", this);
+  setObjectName("Settings");
+  setFixedWidth(40);
 
-  QMenu *file = menuBar()->addMenu("&File");
+  auto *quit = new QAction("&Quit", this);
+  this->setContentsMargins(0,0,0,0);
+  this->setStyleSheet("background-color: #111111; color: #edffd3;"); 
+
+  QMenu *file = menuBar()->addMenu("File");
   file->addAction(quit);
 
   connect(quit, &QAction::triggered, qApp, QApplication::quit);

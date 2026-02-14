@@ -17,6 +17,8 @@ add_executable(MusicTL
     src/MainWindow.cpp
     src/ui/Player.cpp
     src/ui/Settings.cpp
+    src/ui/TierList.cpp
+    src/ui/Content.cpp
     
 )
 

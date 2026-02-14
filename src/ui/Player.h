@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QMainWindow>
+#include <QFrame>
 #include <QApplication>
 
-class Player: public QMainWindow {
+class Player: public QFrame{
 
   public:
     Player(QWidget *parent = nullptr);

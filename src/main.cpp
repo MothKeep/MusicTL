@@ -5,13 +5,22 @@
 
 #include "MainWindow.h"
 
+QString loadStyleSheet(const QString& path){
+  QFile file(path);
+  if (!file.open(QFile::ReadOnly))
+    return "";
+
+  return QString::fromUtf8(file.readAll());
+}
+
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
-  QFile file("../src/style.qss");
-  if (file.open(QFile::ReadOnly)){
-    app.setStyleSheet(file.readAll());
-  }
+  QString style;
+  style += loadStyleSheet("../src/styles/style.qss");
+  style += loadStyleSheet("../src/styles/scrollBar.qss");
+
+  app.setStyleSheet(style);
 
   MainWindow window;
   window.setWindowTitle("Music Tier List");
