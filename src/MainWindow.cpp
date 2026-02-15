@@ -42,6 +42,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent){
   root->addWidget(right);
   rightLayout->addWidget(top);
   rightLayout->addWidget(player);
-  topLayout->addWidget(TierScroll, 65);
-  topLayout->addWidget(content, 35);
+  topLayout->addWidget(TierScroll, 64);
+  topLayout->addWidget(content, 36);
 }
