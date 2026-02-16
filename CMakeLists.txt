@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui Widgets Multimedia)
 
 add_executable(MusicTL
     src/main.cpp
@@ -24,5 +24,9 @@ add_executable(MusicTL
     
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
-
+target_link_libraries(MusicTL PRIVATE 
+  Qt6::Core 
+  Qt6::Gui 
+  Qt6::Widgets 
+  Qt6::Multimedia
+)

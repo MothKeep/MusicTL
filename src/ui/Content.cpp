@@ -1,13 +1,12 @@
 #include "Content.h"
+#include "Player.h"
 #include <QMenu>
 #include <QMenuBar>
-#include <QPushButton>
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QDrag>
-#include <QPixmap>
 
-Content::Content(QWidget *parent) : QFrame(parent) {
+Content::Content(Player* player, QWidget *parent) : QFrame(parent) {
   setObjectName("Content");
   this->setContentsMargins(0,0,0,0);
   this->setStyleSheet("background-color: #222222; color: #edffd3;"); 
@@ -37,10 +36,8 @@ Content::Content(QWidget *parent) : QFrame(parent) {
   ContentLayout = new FlowLayout;
   ContentLayout->setSpacing(10);
 
-  for(int i=0; i<10; i++){
-    auto* track = new Track();
-    ContentLayout->addWidget(track);
-  }
+  auto* track = new Track("/home/artiz/Downloads/G.mp3", player);
+  ContentLayout->addWidget(track);
 
   root->addLayout(ContentLayout, 1);
   root->addLayout(bottomBar);
@@ -68,13 +65,13 @@ void Content::dropEvent(QDropEvent* event){
 }
 
 //Track
-Track::Track(QWidget *parent) : QFrame(parent){
+Track::Track(const QString& filePath, Player* player, const QPixmap& cover, QWidget* parent)
+    : QFrame(parent), m_filePath(filePath), m_player(player), m_cover(cover){
   setObjectName("Track");
-  setMinimumHeight(100);
-  setMinimumWidth(100);
+  setFixedSize(90,115);
   setFrameShape(QFrame::StyledPanel);
   this->setContentsMargins(0,0,0,0);
-  this->setStyleSheet("background-color: #444; border-radius: 6px;"); 
+  this->setStyleSheet("background-color: #444; border-radius: 12px;"); 
   dragging = false;
   
   auto* mainLayout = new QVBoxLayout(this);
@@ -82,23 +79,55 @@ Track::Track(QWidget *parent) : QFrame(parent){
   mainLayout->setSpacing(5);
 
   TopBox = new QFrame;
-  TopBox ->setFixedHeight(80);
-  TopBox ->setFixedWidth(80);
+  TopBox ->setFixedSize(80, 80);
   TopBox->setStyleSheet("background-color: #555; border-radius: 4px;"); 
 
-  auto* topLayout = new QVBoxLayout(TopBox);
-  topLayout->setContentsMargins(5,5,5,5);
-  topLayout->setSpacing(2);
-      
-  NameBox = new QFrame;
-  NameBox->setFixedHeight(20);
-  NameBox->setFixedWidth(80);
-  NameBox->setStyleSheet("background-color: #555; color: #edffd3; border-radius: 4px;"); 
+  if(!m_cover.isNull()) {
+    QLabel* coverLabel = new QLabel(TopBox);
+    coverLabel->setPixmap(m_cover.scaled(80,80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    coverLabel->setAlignment(Qt::AlignCenter);
+    coverLabel->setContentsMargins(0,0,0,0);
+  }
 
+  NameBox = new QFrame;
+  NameBox->setFixedSize(80, 20);
+  NameBox->setStyleSheet("background-color: #555; color: #edffd3; border-radius: 4px;"); 
+  auto* label = new QLabel(QFileInfo(filePath).fileName(), NameBox);
+  label->setAlignment(Qt::AlignCenter);
+  
   mainLayout->addWidget(TopBox, 0, Qt::AlignHCenter);
   mainLayout->addWidget(NameBox, 0, Qt::AlignHCenter);
+  
+  playOverlay = new QPushButton(this);
+  playOverlay->setText("▶");
+  playOverlay->setStyleSheet("background-color: rgba(0,0,0,0.5); color: white; border-radius: 12px;");
+  playOverlay->setFixedSize(30,30);
+  playOverlay->move((width() - playOverlay->width())/2, 30);
+  playOverlay->hide();
+
+  connect(playOverlay, &QPushButton::clicked, this, &Track::playClicked);
+
 };
   
+void Track::enterEvent(QEnterEvent* event) {
+  QFrame::enterEvent(event);  
+  playOverlay->show();
+}
+
+void Track::leaveEvent(QEvent* event) {
+  QFrame::leaveEvent(event);
+  playOverlay->hide();
+}
+
+void Track::playClicked() {
+  if (m_player) {
+    QString path = m_filePath;
+    if (path.startsWith("~"))
+      path = path.mid(1);
+    m_player->playTrack(path);
+  }
+}
+
 void Track::mousePressEvent(QMouseEvent* event){
   if(event->button() != Qt::LeftButton) return;
 

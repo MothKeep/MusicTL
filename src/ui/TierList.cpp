@@ -53,13 +53,13 @@ TierList::TierList(QWidget *parent) : QFrame(parent) {
 
 Tier::Tier(const QString& name, QWidget *parent) : QFrame(parent){
   setObjectName("Tier");
-  setMinimumHeight(100);
+  setMinimumHeight(120);
   setFrameShape(QFrame::StyledPanel);
   this->setContentsMargins(0,0,0,0);
 
   auto* mainLayout = new QHBoxLayout(this);
-  mainLayout->setContentsMargins(5,5,5,5);
-  mainLayout->setSpacing(5);
+  mainLayout->setContentsMargins(0,0,0,0);
+  mainLayout->setSpacing(10);
 
   leftBox = new QFrame;
   leftBox->setFixedWidth(100);
@@ -79,7 +79,7 @@ Tier::Tier(const QString& name, QWidget *parent) : QFrame(parent){
       
   auto* topRow = new QHBoxLayout;
   topRow->setContentsMargins(0,0,0,0);
-  topRow->setSpacing(2);
+  topRow->setSpacing(0);
   topRow->addStretch();
   
   QPushButton* colorBtn = new QPushButton("c");
@@ -103,8 +103,10 @@ Tier::Tier(const QString& name, QWidget *parent) : QFrame(parent){
   titleEdit = new QLineEdit(name);
   titleEdit->setStyleSheet("font-size: 24px; font-weight: bold; color: white; background: transparent; border: none;");
   titleEdit->setAlignment(Qt::AlignCenter);
+
+  leftLayout->addStretch(4);
   leftLayout->addWidget(titleEdit);
-  leftLayout->addStretch();
+  leftLayout->addStretch(5);
 
   mainLayout->addWidget(leftBox);
   

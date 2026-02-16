@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent){
   player = new Player;
   settings = new Settings;
   tierlist = new TierList;
-  content = new Content;
+  content = new Content(player);
   
   auto *TierScroll = new QScrollArea;
   TierScroll->setWidget(tierlist);
