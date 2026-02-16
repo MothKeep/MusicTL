@@ -24,6 +24,7 @@ FlowLayout::~FlowLayout()
 void FlowLayout::addItem(QLayoutItem *item)
 {
     itemList.append(item);
+    invalidate(); 
 }
 
 

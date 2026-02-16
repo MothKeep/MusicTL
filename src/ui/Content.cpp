@@ -1,12 +1,42 @@
 #include "Content.h"
 #include "Player.h"
-#include <QMenu>
-#include <QMenuBar>
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QDrag>
+#include <QPainter>
+#include <QPainterPath>
+#include <QFileDialog>
+#include <QDirIterator>
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/id3v2frame.h>
+#include <taglib/attachedpictureframe.h>
 
-Content::Content(Player* player, QWidget *parent) : QFrame(parent) {
+QPixmap extractAlbumCover(const QString& filePath){
+  TagLib::MPEG::File file(filePath.toUtf8().constData());
+  if (!file.isValid()) return QPixmap();
+
+  TagLib::ID3v2::Tag* tag = file.ID3v2Tag();
+  if (!tag) return QPixmap();
+
+  auto frames = tag->frameListMap()["APIC"];
+  if (frames.isEmpty()) return QPixmap();
+
+  auto* picFrame = dynamic_cast<TagLib::ID3v2::AttachedPictureFrame*>(frames.front());
+  if (!picFrame) return QPixmap();
+  
+  QByteArray imgData(
+    picFrame->picture().data(),
+    picFrame->picture().size()
+  );
+
+  QPixmap cover;
+  cover.loadFromData(imgData);
+ 
+  return cover;
+}
+
+Content::Content(Player* player, QWidget *parent, std::string path) : QFrame(parent), m_player(player) {
   setObjectName("Content");
   this->setContentsMargins(0,0,0,0);
   this->setStyleSheet("background-color: #222222; color: #edffd3;"); 
@@ -33,16 +63,40 @@ Content::Content(Player* player, QWidget *parent) : QFrame(parent) {
 
   bottomBar->addWidget(newTrack);
   
-  ContentLayout = new FlowLayout;
+  auto* flowContainer = new QWidget(this);
+  ContentLayout = new FlowLayout(flowContainer);
+  ContentLayout->setContentsMargins(0,0,0,0);
   ContentLayout->setSpacing(10);
 
-  auto* track = new Track("/home/artiz/Downloads/G.mp3", player);
-  ContentLayout->addWidget(track);
+  root->addWidget(flowContainer, 1);
 
   root->addLayout(ContentLayout, 1);
+  root->addStretch(); 
   root->addLayout(bottomBar);
 
+  QDirIterator it(
+    QString::fromStdString(path),
+    {"*.mp3", "*.wav", "*.flac", "*.ogg"},
+    QDir::Files,
+    QDirIterator::Subdirectories
+  );
+
+  while (it.hasNext()) {
+    QString filePath = it.next();
+
+    auto* track = new Track(filePath, m_player, this);
+    ContentLayout->addWidget(track);
+  }
+
   QObject::connect(addBtn, &QPushButton::clicked, [this](){
+    QString filePath = QFileDialog::getOpenFileName(this, "Add Music Track", QDir::homePath(), "Audio Files (*.mp3 *.wav *.flac *.ogg)");
+
+    if (filePath.isEmpty())
+      return;
+
+    auto* track = new Track(filePath, m_player, this);
+    ContentLayout->addWidget(track);
+    track->show();
   });
   
 }
@@ -65,8 +119,8 @@ void Content::dropEvent(QDropEvent* event){
 }
 
 //Track
-Track::Track(const QString& filePath, Player* player, const QPixmap& cover, QWidget* parent)
-    : QFrame(parent), m_filePath(filePath), m_player(player), m_cover(cover){
+Track::Track(const QString& filePath, Player* player, QWidget* parent)
+    : QFrame(parent), m_filePath(filePath), m_player(player){ 
   setObjectName("Track");
   setFixedSize(90,115);
   setFrameShape(QFrame::StyledPanel);
@@ -81,12 +135,23 @@ Track::Track(const QString& filePath, Player* player, const QPixmap& cover, QWid
   TopBox = new QFrame;
   TopBox ->setFixedSize(80, 80);
   TopBox->setStyleSheet("background-color: #555; border-radius: 4px;"); 
+  QPixmap cover = extractAlbumCover(filePath);
 
-  if(!m_cover.isNull()) {
+  if(!cover.isNull()) {
+    QPixmap scaled = cover.scaled(80, 80, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
     QLabel* coverLabel = new QLabel(TopBox);
-    coverLabel->setPixmap(m_cover.scaled(80,80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    coverLabel->setAlignment(Qt::AlignCenter);
-    coverLabel->setContentsMargins(0,0,0,0);
+    
+    QPixmap rounded(scaled.size());
+    rounded.fill(Qt::transparent);
+
+    QPainter p(&rounded);
+    p.setRenderHint(QPainter::Antialiasing);
+    QPainterPath path;
+    path.addRoundedRect(rounded.rect(), 8, 8);
+    p.setClipPath(path);
+    p.drawPixmap(0, 0, scaled);
+    
+    coverLabel->setPixmap(rounded);
   }
 
   NameBox = new QFrame;

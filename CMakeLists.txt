@@ -11,6 +11,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui Widgets Multimedia)
+find_package(TagLib REQUIRED)
 
 add_executable(MusicTL
     src/main.cpp
@@ -29,4 +30,5 @@ target_link_libraries(MusicTL PRIVATE
   Qt6::Gui 
   Qt6::Widgets 
   Qt6::Multimedia
+  TagLib::TagLib
 )

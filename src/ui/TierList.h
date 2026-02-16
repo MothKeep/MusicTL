@@ -19,8 +19,6 @@ class Tier: public QFrame {
 
   public:
     Tier(const QString& name, QWidget *parent = nullptr);
-    QHBoxLayout* contentLayout;
-    QWidget* contentContainer;
   
   protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -31,6 +29,8 @@ class Tier: public QFrame {
     bool eventFilter(QObject* obj, QEvent* event) override; 
   
   private:
+    QHBoxLayout* contentLayout;
+    QWidget* contentContainer;
     QLineEdit* titleEdit;
     QFrame* leftBox;
     

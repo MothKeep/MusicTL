@@ -8,7 +8,7 @@
 #include <QHBoxLayout>
 #include <QScrollArea>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent){
+MainWindow::MainWindow(QWidget* parent, std::string path) : QMainWindow(parent){
   QWidget* central = new QWidget(this);
   setCentralWidget(central);
 
@@ -16,20 +16,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent){
   root->setContentsMargins(0,0,0,0);
   root->setSpacing(0);
   
-  QWidget* right = new QWidget;
+  QWidget* right = new QWidget(central);
   auto* rightLayout = new QVBoxLayout(right);
   rightLayout->setContentsMargins(0,0,0,0);
   rightLayout->setSpacing(0);
 
-  QWidget* top = new QWidget;
+  QWidget* top = new QWidget(right);
   auto* topLayout = new QHBoxLayout(top);
   topLayout->setContentsMargins(0,0,0,0);
   topLayout->setSpacing(4);
   top->setStyleSheet("background-color: #0f0f0f;");
-  player = new Player;
-  settings = new Settings;
-  tierlist = new TierList;
-  content = new Content(player);
+  player = new Player(right);
+  settings = new Settings(central);
+  tierlist = new TierList(top);
+  content = new Content(player,top,path);
   
   auto *TierScroll = new QScrollArea;
   TierScroll->setWidget(tierlist);

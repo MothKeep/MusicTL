@@ -13,8 +13,12 @@ QString loadStyleSheet(const QString& path){
   return QString::fromUtf8(file.readAll());
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
   QApplication app(argc, argv);
+
+  std::string path="";
+  if (argc >= 2)
+    path=argv[1];
 
   QString style;
   style += loadStyleSheet("../src/styles/style.qss");
@@ -22,7 +26,7 @@ int main(int argc, char *argv[]) {
 
   app.setStyleSheet(style);
 
-  MainWindow window;
+  MainWindow window(nullptr, path);
   window.setWindowTitle("Music Tier List");
   window.setFixedSize(1180, 850);
   window.show();   

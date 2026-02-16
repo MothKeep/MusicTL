@@ -13,24 +13,26 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QEnterEvent>
+#include <string>
 
 class Content: public QFrame{
   Q_OBJECT
   public:
-    Content(Player* player, QWidget *parent = nullptr);
-    FlowLayout* ContentLayout;
+    Content(Player* player, QWidget *parent = nullptr, std::string path="");
 
   protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
   
   private:
+    FlowLayout* ContentLayout;
+    Player* m_player;
 };
 
 class Track: public QFrame{
   Q_OBJECT
   public:
-    explicit Track(const QString& filePath, Player* player, const QPixmap& cover = QPixmap(), QWidget *parent = nullptr);
+    explicit Track(const QString& filePath, Player* player, QWidget *parent = nullptr);
     
     QString filePath() const { return m_filePath; }
 
@@ -42,7 +44,6 @@ class Track: public QFrame{
     void playClicked();
   private:
     QString m_filePath;
-    QPixmap m_cover;      
     Player* m_player;
     QPushButton* playOverlay; 
     

@@ -1,17 +1,22 @@
 #include "Settings.h"
-#include <QMenu>
-#include <QMenuBar>
+#include <qwidget.h>
+#include <QVBoxLayout>
+#include <QPushButton>
 
-Settings::Settings(QWidget *parent) : QMainWindow(parent) {
+Settings::Settings(QWidget *parent) : QWidget(parent) {
   setObjectName("Settings");
   setFixedWidth(40);
+  setStyleSheet("background-color: #111111; color: #edffd3;");
+  
+  auto *layout = new QVBoxLayout(this);
+ 
+  layout->setContentsMargins(0, 0, 0, 0);
+  
+  auto *quitBtn = new QPushButton("Quit", this);
+  quitBtn->setFixedSize(32, 32);
+  layout->addWidget(quitBtn, 0, Qt::AlignHCenter | Qt::AlignTop);
 
-  auto *quit = new QAction("&Quit", this);
-  this->setContentsMargins(0,0,0,0);
-  this->setStyleSheet("background-color: #111111; color: #edffd3;"); 
+  layout->addStretch();
 
-  QMenu *file = menuBar()->addMenu("File");
-  file->addAction(quit);
-
-  connect(quit, &QAction::triggered, qApp, QApplication::quit);
+  connect(quitBtn, &QPushButton::clicked, qApp, &QApplication::quit);
 }

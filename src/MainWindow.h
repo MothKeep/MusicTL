@@ -1,5 +1,6 @@
 #pragma once
 #include <QMainWindow>
+#include <string>
 #include "ui/Player.h"
 #include "ui/Settings.h"
 #include "ui/TierList.h"
@@ -8,7 +9,7 @@
 class MainWindow : public QMainWindow {
   Q_OBJECT
 public:
-  explicit MainWindow(QWidget* parent = nullptr);
+  explicit MainWindow(QWidget* parent = nullptr, std::string path="");
 
 private:
   Player* player;
